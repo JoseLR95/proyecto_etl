@@ -15,7 +15,7 @@ from datetime import datetime
 from datetime import date
 from dotenv import load_dotenv
 import os
-from scr import convertir_fecha, convertir_fechaeventos, scrapear_hoteles, extraccion_api, insertar_datos_automatico, conexion_postgres
+from src import convertir_fecha, convertir_fechaeventos, scrapear_hoteles, extraccion_api, insertar_datos_automatico, conexion_postgres
 import psycopg2
 
 # Cargar fichero y crear copia
@@ -113,7 +113,7 @@ user = os.getenv("user")
 password = os.getenv("password")
 host = os.getenv("host")
 port = os.getenv("port")
-[conn, cur] = conexion_postgres(dbname, user, password, host, port)
+(conn, cur) = conexion_postgres(dbname, user, password, host, port)
 
 # Tabla ciudad
 listaciudad = dfpropio["ciudad"].unique().tolist()
@@ -179,6 +179,9 @@ df_reservas.drop(columns = ["mail"], inplace = True)
 df_reservas["id_hotel"] = df_reservas["nombre_hotel"].map(hoteles_dict)
 df_reservas.drop(columns = ["nombre_hotel"], inplace = True)
 insertar_datos_automatico(df_reservas, "reservas", cur)
+
+cur.close()
+conn.close()
 
 if __name__ == "__main__":
     print('Ejecutando proceso ETL')
